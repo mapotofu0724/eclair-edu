@@ -2,188 +2,191 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>角色拉霸機</title>
   <style>
     body {
-      font-family: 'Microsoft JhengHei', sans-serif;
-      background: linear-gradient(to bottom, #222, #444);
-      color: #fff;
+      font-family: "Microsoft JhengHei", sans-serif;
+      background: linear-gradient(to bottom, #ffcc00, #ff6600);
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
-      height: 100vh;
+      justify-content: flex-start;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      color: #fff;
     }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 6px #000;
+    }
+
+    .machine-container {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+    }
+
     .slot-machine {
+      background: #222;
+      border: 6px solid #ffd700;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      width: 500px;
+      padding: 20px;
       display: flex;
+      justify-content: space-around;
       align-items: center;
-      gap: 50px;
-      transform: scale(1.2); /* 整體放大 */
-    }
-    .reels {
-      display: flex;
-      background: #111;
-      border: 8px solid #888;
-      border-radius: 15px;
-      overflow: hidden;
-      box-shadow: 0 0 30px #000;
-      padding: 10px;
-    }
-    .reel {
-      width: 220px;   /* 拉大視窗寬度 */
-      height: 280px;  /* 拉大視窗高度 */
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 26px; /* 放大字體 */
+      font-size: 2rem;
       font-weight: bold;
-      border-left: 3px solid #333;
-      border-right: 3px solid #333;
-      text-align: center;
-      padding: 10px;
+      color: #ffeb3b;
     }
+
+    .slot {
+      background: #333;
+      border: 4px solid #555;
+      border-radius: 10px;
+      padding: 20px;
+      width: 120px;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-size: 1.4rem;
+      overflow: hidden;
+    }
+
     .lever {
-      width: 50px;
-      height: 260px;
-      background: #999;
-      border-radius: 12px;
+      width: 40px;
+      height: 200px;
+      background: #444;
+      border-radius: 20px;
       position: relative;
       cursor: pointer;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
     }
-    .lever-handle {
-      width: 70px;
-      height: 70px;
+
+    .lever::after {
+      content: "";
+      position: absolute;
+      bottom: -25px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 60px;
       background: red;
       border-radius: 50%;
-      position: absolute;
-      left: -12px;
-      top: -25px;
-      transition: transform 0.3s;
+      border: 4px solid #222;
+      box-shadow: 0 0 10px rgba(0,0,0,0.6);
+      transition: transform 0.3s ease;
     }
-    .lever.down .lever-handle {
-      transform: translateY(150px);
+
+    .lever.down::after {
+      transform: translateX(-50%) translateY(20px);
     }
-    .result {
-      margin-top: 25px;
-      font-size: 26px; /* 放大結果字體 */
-      text-align: center;
-      font-weight: bold;
-    }
+
     .history {
-      margin-top: 25px;
-      padding: 15px;
-      width: 700px; /* 拉寬歷史紀錄區塊 */
-      background: #222;
-      border: 3px solid #555;
-      border-radius: 10px;
+      margin-top: 30px;
+      width: 80%;
+      max-width: 700px;
+      background: rgba(0,0,0,0.6);
+      border-radius: 15px;
+      padding: 20px;
     }
-    .history h3 {
-      margin: 0 0 15px 0;
-      font-size: 22px;
+
+    .history h2 {
+      margin: 0 0 10px 0;
+      font-size: 1.5rem;
       text-align: center;
-      color: #ffcc00;
     }
+
     .history-list {
       list-style: none;
       padding: 0;
       margin: 0;
     }
+
     .history-list li {
-      font-size: 20px; /* 放大紀錄字體 */
-      margin: 8px 0;
-      padding: 8px;
-      background: #333;
-      border-radius: 5px;
-    }
-    .history-list li:first-child {
-      background: #ff9933; /* 高亮最近一次 */
-      color: #000;
-      font-weight: bold;
+      margin: 5px 0;
+      padding: 10px;
+      border-bottom: 1px solid #555;
+      font-size: 1.2rem;
     }
   </style>
 </head>
 <body>
-  <div class="slot-machine">
-    <div class="reels">
-      <div class="reel" id="reel1">?</div>
-      <div class="reel" id="reel2">?</div>
-      <div class="reel" id="reel3">?</div>
+  <h1>角色拉霸機 🎰</h1>
+  <div class="machine-container">
+    <div class="slot-machine">
+      <div id="role" class="slot">???</div>
+      <div id="trait" class="slot">???</div>
+      <div id="story" class="slot">???</div>
     </div>
-    <div class="lever" id="lever">
-      <div class="lever-handle"></div>
-    </div>
+    <div id="lever" class="lever"></div>
   </div>
-  <div class="result" id="result">拉桿開始遊戲！</div>
 
   <div class="history">
-    <h3>最近三次結果</h3>
-    <ul class="history-list" id="history-list"></ul>
+    <h2>歷史紀錄</h2>
+    <ul id="history-list" class="history-list"></ul>
   </div>
 
   <script>
-    const roles = ["勇敢的騎士","狡猾的盜賊","智慧的巫師","冷酷的刺客","忠誠的侍從",
-    "迷途的旅人","優雅的公主","偉大的國王","殘暴的暴君","善良的村姑",
-    "孤獨的遊俠","狂熱的祭司","迷人的舞者","被詛咒的戰士","流浪的吟遊詩人",
-    "野心勃勃的將軍","憂鬱的詩人","貪婪的商人","被放逐的王子","溫柔的母親",
-    "冷靜的醫者","粗魯的海盜","睿智的長老","調皮的精靈","神秘的占卜師",
-    "勇敢的消防員","孤傲的劍豪","膽小的學徒","忠實的獵犬","機智的偵探"];
+    const roles = [
+      "勇者","魔法師","忍者","騎士","刺客","國王","女王","村民","商人","盜賊",
+      "學者","醫師","煉金術士","冒險者","海盜","船長","弓箭手","祭司","牧師","戰士",
+      "獸人","精靈","矮人","巨人","龍騎士","妖精","惡魔","天使","幽靈","占卜師"
+    ];
+    const traits = [
+      "勇敢","膽小","狡猾","正直","懶惰","勤奮","衝動","冷靜","傲慢","謙遜",
+      "樂觀","悲觀","多疑","忠誠","背叛","熱情","冷酷","機智","愚笨","仁慈",
+      "殘忍","孤僻","外向","優柔寡斷","果斷","嫉妒","寬容","堅強","脆弱","固執"
+    ];
+    const stories = [
+      "拯救公主","探索迷宮","擊敗惡龍","奪回王位","尋找寶藏","守護村莊","逃離詛咒","踏上旅程","結交同伴","建立王國",
+      "挑戰競技場","尋找真相","對抗黑暗勢力","封印魔王","破解古代遺跡","探索未知大陸","復仇之路","拯救摯友","穿越時空","追尋夢想",
+      "保護聖物","抵禦外敵","暗殺目標","追捕逃犯","贖回榮譽","守護家人","傳遞密令","尋找師父","探索深海","冒險沙漠"
+    ];
 
-    const traits = ["充滿勇氣","內心恐懼","永不放棄","懷有秘密","渴望自由",
-    "深情款款","嫉妒心強","極度貪婪","樂於助人","冷酷無情",
-    "沉默寡言","外向活潑","多愁善感","機智過人","固執己見",
-    "迷茫不安","心思縝密","天真無邪","滿腔熱血","心懷報仇",
-    "嚴謹守法","無視規矩","信守承諾","多疑敏感","熱愛和平",
-    "渴望冒險","善於領導","不擅溝通","迷信命運","善變多端"];
-
-    const stories = ["踏上拯救王國的旅程","迷失在未知的叢林","發現了禁忌的魔法書","被困在時間的輪迴裡","找到了一把神秘的寶劍",
-    "決定背叛自己的同伴","被迫接受危險的任務","遇見了傳說中的巨龍","守護一個古老的秘密","試圖改變自己的命運",
-    "與昔日的好友成為敵人","陷入愛情的糾葛","揭開王室的陰謀","守護村莊抵抗入侵","踏上尋找自我的旅途",
-    "與怪物簽下契約","在夢境中尋找答案","試圖阻止一場戰爭","發現自己其實是皇族後裔","意外打開了地獄之門",
-    "追逐永生的秘密","保護一個來自未來的孩子","挑戰不可一世的霸主","誤入平行世界","與神祇進行交易",
-    "在荒島上求生","參與一場致命的比賽","意外獲得超能力","背負千年詛咒","帶領反抗軍爭取自由"];
-
+    const lever = document.getElementById("lever");
+    const historyList = document.getElementById("history-list");
     let history = [];
 
     function spin() {
-      const reel1 = document.getElementById("reel1");
-      const reel2 = document.getElementById("reel2");
-      const reel3 = document.getElementById("reel3");
-      const result = document.getElementById("result");
-      const lever = document.getElementById("lever");
-
+      // 拉桿動畫
       lever.classList.add("down");
+      setTimeout(() => lever.classList.remove("down"), 500);
 
-      let spins = 25;
-      let interval = setInterval(() => {
-        reel1.textContent = roles[Math.floor(Math.random() * roles.length)];
-        reel2.textContent = traits[Math.floor(Math.random() * traits.length)];
-        reel3.textContent = stories[Math.floor(Math.random() * stories.length)];
-        spins--;
-        if (spins <= 0) {
-          clearInterval(interval);
-          lever.classList.remove("down");
-          const outcome = `${reel1.textContent}，${reel2.textContent}，${reel3.textContent}`;
-          result.textContent = `結果：${outcome}`;
+      // 亂數抽取
+      const role = roles[Math.floor(Math.random() * roles.length)];
+      const trait = traits[Math.floor(Math.random() * traits.length)];
+      const story = stories[Math.floor(Math.random() * stories.length)];
 
-          history.unshift(outcome);
-          if (history.length > 3) history.pop();
-          updateHistory();
-        }
-      }, 100);
+      // 更新主畫面
+      document.getElementById("role").textContent = role;
+      document.getElementById("trait").textContent = trait;
+      document.getElementById("story").textContent = story;
+
+      // 更新歷史紀錄（最多 3 筆，最新在最上面）
+      history.unshift(`${role} - ${trait} - ${story}`);
+      if (history.length > 3) history.pop();
+
+      renderHistory();
     }
 
-    function updateHistory() {
-      const historyList = document.getElementById("history-list");
+    function renderHistory() {
       historyList.innerHTML = "";
-      const labels = ["最近一次", "前一次", "前前一次"];
       history.forEach((item, index) => {
         const li = document.createElement("li");
-        li.textContent = `${labels[index]}：${item}`;
+        li.textContent = `最近第${index+1}次：${item}`;
         historyList.appendChild(li);
       });
     }
 
-    document.getElementById("lever").addEventListener("click", spin);
+    lever.addEventListener("click", spin);
   </script>
 </body>
 </html>
