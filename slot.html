@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>角色拉霸機</title>
+  <style>
+    body {
+      font-family: 'Microsoft JhengHei', sans-serif;
+      background: linear-gradient(to bottom, #222, #444);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .slot-machine {
+      display: flex;
+      align-items: center;
+      gap: 50px;
+      transform: scale(1.2); /* 整體放大 */
+    }
+    .reels {
+      display: flex;
+      background: #111;
+      border: 8px solid #888;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 0 30px #000;
+      padding: 10px;
+    }
+    .reel {
+      width: 220px;   /* 拉大視窗寬度 */
+      height: 280px;  /* 拉大視窗高度 */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 26px; /* 放大字體 */
+      font-weight: bold;
+      border-left: 3px solid #333;
+      border-right: 3px solid #333;
+      text-align: center;
+      padding: 10px;
+    }
+    .lever {
+      width: 50px;
+      height: 260px;
+      background: #999;
+      border-radius: 12px;
+      position: relative;
+      cursor: pointer;
+    }
+    .lever-handle {
+      width: 70px;
+      height: 70px;
+      background: red;
+      border-radius: 50%;
+      position: absolute;
+      left: -12px;
+      top: -25px;
+      transition: transform 0.3s;
+    }
+    .lever.down .lever-handle {
+      transform: translateY(150px);
+    }
+    .result {
+      margin-top: 25px;
+      font-size: 26px; /* 放大結果字體 */
+      text-align: center;
+      font-weight: bold;
+    }
+    .history {
+      margin-top: 25px;
+      padding: 15px;
+      width: 700px; /* 拉寬歷史紀錄區塊 */
+      background: #222;
+      border: 3px solid #555;
+      border-radius: 10px;
+    }
+    .history h3 {
+      margin: 0 0 15px 0;
+      font-size: 22px;
+      text-align: center;
+      color: #ffcc00;
+    }
+    .history-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .history-list li {
+      font-size: 20px; /* 放大紀錄字體 */
+      margin: 8px 0;
+      padding: 8px;
+      background: #333;
+      border-radius: 5px;
+    }
+    .history-list li:first-child {
+      background: #ff9933; /* 高亮最近一次 */
+      color: #000;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="slot-machine">
+    <div class="reels">
+      <div class="reel" id="reel1">?</div>
+      <div class="reel" id="reel2">?</div>
+      <div class="reel" id="reel3">?</div>
+    </div>
+    <div class="lever" id="lever">
+      <div class="lever-handle"></div>
+    </div>
+  </div>
+  <div class="result" id="result">拉桿開始遊戲！</div>
+
+  <div class="history">
+    <h3>最近三次結果</h3>
+    <ul class="history-list" id="history-list"></ul>
+  </div>
+
+  <script>
+    const roles = ["勇敢的騎士","狡猾的盜賊","智慧的巫師","冷酷的刺客","忠誠的侍從",
+    "迷途的旅人","優雅的公主","偉大的國王","殘暴的暴君","善良的村姑",
+    "孤獨的遊俠","狂熱的祭司","迷人的舞者","被詛咒的戰士","流浪的吟遊詩人",
+    "野心勃勃的將軍","憂鬱的詩人","貪婪的商人","被放逐的王子","溫柔的母親",
+    "冷靜的醫者","粗魯的海盜","睿智的長老","調皮的精靈","神秘的占卜師",
+    "勇敢的消防員","孤傲的劍豪","膽小的學徒","忠實的獵犬","機智的偵探"];
+
+    const traits = ["充滿勇氣","內心恐懼","永不放棄","懷有秘密","渴望自由",
+    "深情款款","嫉妒心強","極度貪婪","樂於助人","冷酷無情",
+    "沉默寡言","外向活潑","多愁善感","機智過人","固執己見",
+    "迷茫不安","心思縝密","天真無邪","滿腔熱血","心懷報仇",
+    "嚴謹守法","無視規矩","信守承諾","多疑敏感","熱愛和平",
+    "渴望冒險","善於領導","不擅溝通","迷信命運","善變多端"];
+
+    const stories = ["踏上拯救王國的旅程","迷失在未知的叢林","發現了禁忌的魔法書","被困在時間的輪迴裡","找到了一把神秘的寶劍",
+    "決定背叛自己的同伴","被迫接受危險的任務","遇見了傳說中的巨龍","守護一個古老的秘密","試圖改變自己的命運",
+    "與昔日的好友成為敵人","陷入愛情的糾葛","揭開王室的陰謀","守護村莊抵抗入侵","踏上尋找自我的旅途",
+    "與怪物簽下契約","在夢境中尋找答案","試圖阻止一場戰爭","發現自己其實是皇族後裔","意外打開了地獄之門",
+    "追逐永生的秘密","保護一個來自未來的孩子","挑戰不可一世的霸主","誤入平行世界","與神祇進行交易",
+    "在荒島上求生","參與一場致命的比賽","意外獲得超能力","背負千年詛咒","帶領反抗軍爭取自由"];
+
+    let history = [];
+
+    function spin() {
+      const reel1 = document.getElementById("reel1");
+      const reel2 = document.getElementById("reel2");
+      const reel3 = document.getElementById("reel3");
+      const result = document.getElementById("result");
+      const lever = document.getElementById("lever");
+
+      lever.classList.add("down");
+
+      let spins = 25;
+      let interval = setInterval(() => {
+        reel1.textContent = roles[Math.floor(Math.random() * roles.length)];
+        reel2.textContent = traits[Math.floor(Math.random() * traits.length)];
+        reel3.textContent = stories[Math.floor(Math.random() * stories.length)];
+        spins--;
+        if (spins <= 0) {
+          clearInterval(interval);
+          lever.classList.remove("down");
+          const outcome = `${reel1.textContent}，${reel2.textContent}，${reel3.textContent}`;
+          result.textContent = `結果：${outcome}`;
+
+          history.unshift(outcome);
+          if (history.length > 3) history.pop();
+          updateHistory();
+        }
+      }, 100);
+    }
+
+    function updateHistory() {
+      const historyList = document.getElementById("history-list");
+      historyList.innerHTML = "";
+      const labels = ["最近一次", "前一次", "前前一次"];
+      history.forEach((item, index) => {
+        const li = document.createElement("li");
+        li.textContent = `${labels[index]}：${item}`;
+        historyList.appendChild(li);
+      });
+    }
+
+    document.getElementById("lever").addEventListener("click", spin);
+  </script>
+</body>
+</html>
