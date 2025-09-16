@@ -174,14 +174,16 @@
       history.unshift(`${role} - ${trait} - ${story}`);
       if (history.length > 3) history.pop();
 
-      renderHistory();
+      updateHistory();
     }
 
-    function renderHistory() {
+    function updateHistory() {
+      const historyList = document.getElementById("history-list");
       historyList.innerHTML = "";
+      const labels = ["最近一次", "前一次", "前前一次"];
       history.forEach((item, index) => {
         const li = document.createElement("li");
-        li.textContent = `最近第${index+1}次：${item}`;
+        li.textContent = `${labels[index]}：${item}`;
         historyList.appendChild(li);
       });
     }
