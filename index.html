@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>角色拉霸機</title>
+  <title>故事拉霸機</title>
   <style>
     body {
       font-family: "Microsoft JhengHei", sans-serif;
@@ -192,6 +192,7 @@
       "記仇","圓滑","笨拙","靈活","呆板","敏感","遲鈍","順從","叛逆","守舊",
       "前衛","豪爽","小氣","慷慨","吝嗇","坦誠","憂鬱","開朗","沉著","急躁",
       "神經質","善解人意","獨斷獨行","寬宏大量","斤斤計較","優雅","粗魯","世故","單純","天真"
+      "故步自封","固執","纏人","煩人","杞人憂天","落落大方","容易緊張","情緒化","邪惡","衝動"
     ];
     const stories = [
       "拯救公主","探索迷宮","擊敗惡龍","奪回王位","尋找寶藏","守護村莊","逃離詛咒","踏上旅程","結交同伴","建立王國",
@@ -233,7 +234,7 @@
     function updateHistory() {
       const historyList = document.getElementById("history-list");
       historyList.innerHTML = "";
-      const labels = ["最近一次", "前一次", "前前一次"];
+      const labels = ["第三次", "第二次", "第一次"];
       history.forEach((item, index) => {
         const li = document.createElement("li");
         li.textContent = `${labels[index]}：${item}`;
